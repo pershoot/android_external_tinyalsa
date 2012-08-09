@@ -495,3 +495,35 @@ int mixer_ctl_set_enum_by_string(struct mixer_ctl *ctl, const char *string)
     return -EINVAL;
 }
 
+
+int snd_card_get_card_id_from_sub_string(const char *card_name)
+{
+    int card;
+    int fd;
+    char fn[256];
+    struct snd_ctl_card_info info;
+
+    if (card_name == NULL)
+        return -EINVAL;
+
+    for (card = 0; card < 8; card++) {
+        snprintf(fn, sizeof(fn), "/dev/snd/controlC%u", card);
+        fd = open(fn, O_RDONLY);
+        if (fd < 0)
+            continue;
+        if (ioctl(fd, SNDRV_CTL_IOCTL_CARD_INFO, &info) < 0) {
+            close(fd);
+            continue;
+        }
+        close(fd);
+
+        /* search by card id */
+        if (strcasestr((const char *)info.id, card_name))
+            return info.card;
+
+        /* search by card name */
+        if (strcasestr((const char *)info.name, card_name))
+            return info.card;
+    }
+    return -EINVAL;
+}

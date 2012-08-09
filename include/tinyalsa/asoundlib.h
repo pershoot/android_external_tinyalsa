@@ -295,6 +295,9 @@ int mixer_ctl_set_enum_by_string(struct mixer_ctl *ctl, const char *string);
 int mixer_ctl_get_range_min(struct mixer_ctl *ctl);
 int mixer_ctl_get_range_max(struct mixer_ctl *ctl);
 
+/* Get sound card number using sub string */
+int snd_card_get_card_id_from_sub_string(const char *card_name);
+
 #if defined(__cplusplus)
 }  /* extern "C" */
 #endif
